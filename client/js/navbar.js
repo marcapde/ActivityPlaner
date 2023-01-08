@@ -1,8 +1,11 @@
 // TODO cant acces if not logged in
+let url = 'http://127.0.0.1:3003'
 let itemList = [];
+let path = Cookie.get('path') ? Cookie.get('path') : [];
+
 $(document).ready(async function() {
     let sesId = Cookie.get("sessionToken");
-    let response = await fetch("http://127.0.0.1:3003/activities/test");
+    let response = await fetch(url + "/activities/test");
     let data = await response.json();
     if (response.status !== 200) {
         alert(data.error);
@@ -15,121 +18,22 @@ $(document).ready(async function() {
         });
         content += `</ul>`;
         $("#actItems").append(content);
+        if (path.length !=0 ) openItem(path[path.length-1]);
+        console.log("loading " + path[0])
     }
 });
 
-function editAct(itemId){
-    let itemData = itemList[itemId];
-    let content = ``;
-    content = `
-        <div id="editModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="myLargeModalLabel">Edit Item</h5>
-                        <button  type="button" class="closeModal" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                        <div class="form-group">
-                            <label for="itemName" class="col-form-label">Activity Name:</label>
-                            <input type="text" class="form-control" id="itemName" value="${itemData.name}">
-                        </div>
-                        <div class="form-group">
-                            <label for="descText" class="col-form-label">Description:</label>
-                            <textarea class="form-control" id="descText">${itemData.desc}</textarea>
-                        </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="closeModal btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save</button>
-                    </div>
-                </div>
-            </div>
-        </div>    
-        `    
-    document.getElementById('main').innerHTML += content;
-    $('#editModal').modal('show'); 
-        let desc = $('#descText').val();
-        let name = $('#itemName').val();
-    // MODAL LISTENERS
-    $('#saveModal').click(async function(){
-        let sesId = Cookie.get("sessionToken");
-        let response = await fetch(`http://127.0.0.1:3003/activities/${itemId}/test`,
-            {
-                method: 'PUT',
-                body: JSON.stringify({"name": name, "desc": desc}),
-                headers: {'Content-Type': 'application/json'}
-            }
-        );
-        let data = await response.json();
-        if (response.status !== 200) {
-            alert(data.error);
-        }else{
-            let content = `<ul id="actul">`
-            data.forEach(element => {
-                console.log(element);
-                if(element.mainlevel === true) content += `<li id="${element.id}" onclick="openItem(${element.id})"><h6>${element.name}</h6></li>`
-                itemList[element.id] = element;
-            });
-            content += `</ul>`;
-            $("#actItems").append(content);
-        }
-    }); 
-
-    $('.closeModal').click(function(){
-        $('#editModal').modal('hide');
-    });
-}
-
-
-function delAct(itemId){
-    let content = ``;
-    content = `
-        <div id="confirmDelModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="myLargeModalLabel">Are you sure?</h5>
-                        <button  type="button" class="closeModal" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <h6>So you really want to delete this activity?</h6>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="closeModal btn btn-danger" data-dismiss="modal">Delete</button>
-                        <button type="button" class="btn btn-primary">Keep</button>
-                    </div>
-                </div>
-            </div>
-        </div>    
-        `    
-    document.getElementById('main').innerHTML += content;
-    $('#confirmDelModal').modal('show'); 
-        
-    // MODAL LISTENERS
-    $('#confirmDel').click(function(){
-
-    }); 
-
-    $('.closeModal').click(function(){
-        $('#confirmDelModal').modal('hide');
-    });
-}
-
-
-function newAct(parentId = false){
-
-}
-
-
 function openItem(itemId) {
+    if (!path.includes(itemId)){
+        path.push(itemId);
+        Cookie.set('path', path, 1);
+    }else{
+        path.length = path.indexOf(itemId) + 1;
+        Cookie.set('path', path, 1);
+    }
+
     let itemData = itemList[itemId];
+    console.log(itemData);
     let content = ``;
     content += `<div id="itemHeader"> 
                     <h3>${itemData.name}</h3> 
@@ -154,7 +58,10 @@ function openItem(itemId) {
         console.log(itemList)
         let data = itemList[childId];
         content += `<div id="${childId}" class="card subitem" onclick="openItem(${childId})" >
-                        <div class="card-header">${data.name}</div>
+                        <div class="card-header subItemHeader">
+                            <div>${data.name}</div>
+                            <div><img src="./client/src/delete.png" onclick="delAct(${childId})"></div>
+                        </div>
                         <div class="card-body">	${data.desc}</div>
                     </div>`
     });
@@ -162,6 +69,130 @@ function openItem(itemId) {
     document.getElementById('main').innerHTML = content;
     console.log(itemData.name);
 }
+
+
+
+function editAct(itemId){
+    let itemData = itemList[itemId];
+    let content = ``;
+    content = `
+        <div id="editModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myLargeModalLabel">Edit Item</h5>
+                        <button  type="button" class="btn closeModal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <div class="form-group">
+                            <label for="itemName" class="col-form-label">Activity Name:</label>
+                            <input type="text" class="form-control" id="itemName" value="${itemData.name}">
+                        </div>
+                        <div class="form-group">
+                            <label for="descText" class="col-form-label">Description:</label>
+                            <textarea class="form-control" id="descText">${itemData.desc}</textarea>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="closeModal btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="saveModal" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        `    
+    document.getElementById('main').innerHTML += content;
+    $('#editModal').modal('show'); 
+        
+    // MODAL LISTENERS
+    $('#saveModal').click(async function(){
+        let desc = $('#descText').val();
+        let name = $('#itemName').val();
+        let sesId = Cookie.get("sessionToken");
+        let response = await fetch(url + `/activities/${itemId}/test`,
+            {
+                method: 'PUT',
+                body: JSON.stringify({"name": name, "desc": desc}),
+                headers: {'Content-Type': 'application/json'}
+            }
+        );
+        let data = await response.json();
+        if (response.status !== 200) {
+            alert(data.error);
+        }
+        // else{
+        //     $('#editModal').modal('hide');
+        //     $('#itemName').val(name);
+        // }
+    }); 
+
+    $('.closeModal').click(function(){
+        $('#editModal').modal('hide');
+    });
+    // window.addEventListener('beforeunload', (event) => {
+    //     // Cancel the event as stated by the standard.
+    //     event.preventDefault();
+    //     // Chrome requires returnValue to be set.
+    //     event.returnValue = '';
+    //   });
+}
+
+
+function delAct(itemId){
+    let content = ``;
+    content = `
+        <div id="confirmDelModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myLargeModalLabel">Are you sure?</h5>
+                        <button  type="button" class="btn closeModal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>So you really want to delete this activity?</h6>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="confirmDel" class="closeModal btn btn-danger" data-dismiss="modal">Delete</button>
+                        <button type="button" class="btn btn-primary closeModal">Keep</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        `    
+    document.getElementById('main').innerHTML += content;
+    $('#confirmDelModal').modal('show'); 
+        
+    // MODAL LISTENERS
+    $('#confirmDel').click(async function(){
+        let sesId = Cookie.get("sessionToken");
+        let response = await fetch(url + `/activities/${itemId}/test`,
+            {
+                method: 'DELETE',
+                
+            }
+        );
+        let data = await response.json();
+        if (response.status !== 200) {
+            alert(data.error);
+        }
+    }); 
+
+    $('.closeModal').click(function(){
+        $('#confirmDelModal').modal('hide');
+    });
+}
+
+
+function newAct(parentId = false){
+
+}
+
 
 
 

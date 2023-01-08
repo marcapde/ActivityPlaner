@@ -108,10 +108,70 @@ const putActivity = (req, res) => {
     return;
 }
 
+const deleteActivity = (req, res) => {
+    // console.log(req);
+    const sesId = req.params.sesId;
+    const actId = req.params.actId;
+    console.log("sesId: "+sesId);
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    }
 
+    let username = checkSession(sesId);
+    if (username === ""){
+        res.status(400).json({ error: "session not valid, please login again" });
+        return;
+    } else if (username === false){
+        res.status(400).json({ error: "session has expired, please login again" });
+        return;
+    }
+    var data = fs.readFileSync("./data/activities.json");
+    var act = JSON.parse(data);
+    act.activities.forEach(element => {
+        if (element.children.includes(parseInt(actId))){
+            console.log("INCLUDES!")
+            element.children.splice(element.children.indexOf(parseInt(actId),1));
+        }
+        if (element.id == actId){
+            if (element.children.length !== 0) deleteRecursive(element.children, act);
+            act.activities.splice(act.activities.indexOf(element),1);
+        }
+    });
+    fs.writeFileSync("./data/activities.json", JSON.stringify({"activities":act.activities}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    }); 
+    res.status(200).json(act.activities);
+    return;
+}
 
+function deleteRecursive(childArr = [], act){
+    childArr.forEach(element => {
+        console.log("Deleting act: "+ element)
+        let data = getActData(act,parseInt(element));
+        console.log(data);
+        deleteRecursive(data.childList, act)
+        act.activities.splice(data.index,1);
+    });
+}
 
+function getActData(act, actId){
+    let index = 0;
+    let returnThis = {};
+    act.activities.forEach(element =>{
+        if (element.id == parseInt(actId)){
+            returnThis =  {index : index, childList : element.children};
+        }
+        else index ++;
+    });
+    return returnThis;
+
+}
 module.exports = {
     getActivities,
-    putActivity
+    putActivity,
+    deleteActivity
 }

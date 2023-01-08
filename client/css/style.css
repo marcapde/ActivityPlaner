@@ -89,7 +89,12 @@ nav div.secTitle img{
     column-gap: 10px;
     row-gap: 10px;
 }
-#main #subitemList #sublist .subitem{
-
+#main #subitemList #sublist .subItemHeader{
+    display : flex;
+    justify-content: space-between;
 }
+#main #subitemList #sublist .subItemHeader img{
+    max-height: 20px;
+}
+
 

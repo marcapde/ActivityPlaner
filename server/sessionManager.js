@@ -73,7 +73,6 @@ function deleteDuplicates(sessionObject,uname){
             sessionObject.sessions.splice(sessionObject.sessions.indexOf(element),1);
         }
     });
-
 }
 // function newSession(newSession){
 //     // DELETE EXPIRED AND DUPLICATES
