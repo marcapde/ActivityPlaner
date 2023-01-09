@@ -1,62 +1,148 @@
-{"activities":[ {
-    "username": "mks",
-    "id": 0,
-    "mainlevel": true,
-    "name": "ERASMUS",
-    "desc": "All activities for this erasmsus",
-    "children": [
-        1,
-        2,
-        3,
-        4
+{
+    "activities": [
+        {
+            "username": "mks",
+            "id": 0,
+            "mainlevel": true,
+            "name": "ERASMUS",
+            "desc": "All activities for this erasmsus",
+            "children": [
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        {
+            "username": "mks",
+            "id": 1,
+            "mainlevel": false,
+            "name": "Rotterdam",
+            "desc": "Visit the city",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 2,
+            "mainlevel": false,
+            "name": "Den Haag",
+            "desc": "Visit the city",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 3,
+            "mainlevel": false,
+            "name": "Amsterdam",
+            "desc": "Visit the city",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 4,
+            "mainlevel": false,
+            "name": "Gouda",
+            "desc": "Visit the city",
+            "children": [
+                5
+            ]
+        },
+        {
+            "username": "mks",
+            "id": 5,
+            "mainlevel": false,
+            "name": "Bruges",
+            "desc": "Visit the city",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 6,
+            "mainlevel": false,
+            "name": "Copenhagen",
+            "desc": "Visit the city",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 7,
+            "mainlevel": true,
+            "name": "TODO",
+            "desc": "TODO on this web.",
+            "children": [
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15
+            ]
+        },
+        {
+            "username": "mks",
+            "id": 8,
+            "mainlevel": false,
+            "name": "Navigation path",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 9,
+            "mainlevel": false,
+            "name": "More adaptative",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 10,
+            "mainlevel": false,
+            "name": "Plan list treatment",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 11,
+            "mainlevel": false,
+            "name": "Improve Styling?",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 12,
+            "mainlevel": false,
+            "name": "Pictures for activities?",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 13,
+            "mainlevel": false,
+            "name": "Register",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 14,
+            "mainlevel": false,
+            "name": "Logout",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 15,
+            "mainlevel": false,
+            "name": "Interactions with navbar",
+            "desc": "",
+            "children": []
+        }
     ]
-},
-{
-    "username": "mks",
-    "id": 1,
-    "mainlevel": false,
-    "name": "Rotterdam",
-    "desc": "Visit the city",
-    "children": []
-},
-{
-    "username": "mks",
-    "id": 2,
-    "mainlevel": false,
-    "name": "Den Haag",
-    "desc": "Visit the city",
-    "children": []
-},
-{
-    "username": "mks",
-    "id": 3,
-    "mainlevel": false,
-    "name": "Amsterdam",
-    "desc": "Visit the city",
-    "children": []
-},
-{
-    "username": "mks",
-    "id": 4,
-    "mainlevel": false,
-    "name": "Gouda",
-    "desc": "Visit the city",
-    "children": [5]
-},
-{
-    "username": "mks",
-    "id": 5,
-    "mainlevel": false,
-    "name": "Gouda",
-    "desc": "Visit the city",
-    "children": [6]
-},
-{
-    "username": "mks",
-    "id": 6,
-    "mainlevel": false,
-    "name": "Gouda",
-    "desc": "Visit the city",
-    "children": []
 }
-]}

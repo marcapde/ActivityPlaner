@@ -1,7 +1,7 @@
 // TODO cant acces if not logged in
 let url = 'http://127.0.0.1:3003'
 let itemList = [];
-let path = Cookie.get('path') ? Cookie.get('path') : [];
+let planPath = Cookie.get('planPath') ? Cookie.get('planPpath') : [];
 
 $(document).ready(async function() {
     let sesId = Cookie.get("sessionToken");
@@ -23,16 +23,29 @@ $(document).ready(async function() {
     }
 });
 
+
+
+function openPlan(planId){
+    
+}
+
+
+
 function openItem(itemId) {
-    if (!path.includes(itemId)){
+    console.log("opening " + itemId)
+    let itemData = itemList[itemId];
+    if (!path.includes(itemId) && itemData.mainlevel==false){
         path.push(itemId);
         Cookie.set('path', path, 1);
-    }else{
+    }else if(itemData.mainlevel == true){
+        path = [itemId];
+        Cookie.set('path', path, 1);
+    }
+    else{
         path.length = path.indexOf(itemId) + 1;
         Cookie.set('path', path, 1);
     }
-
-    let itemData = itemList[itemId];
+    
     console.log(itemData);
     let content = ``;
     content += `<div id="itemHeader"> 
@@ -52,7 +65,12 @@ function openItem(itemId) {
                     <div class="card-body">	${itemData.desc}</div>
                 </div>
                 `
-    content += `<div id="subitemList"><h3>Children Activities:</h3> <div id="sublist">`
+    content += `<div id="subitemList">
+                    <div class="sublistHeader">
+                        <h3>Children Activities:</h3>
+                        <img onclick="addAct(${itemId})" src="./client/src/dark-plus.png">
+                    </div> 
+                    <div id="sublist">`
     itemData.children.forEach(function(childId) {
         console.log(childId);
         console.log(itemList)
@@ -140,6 +158,69 @@ function editAct(itemId){
     //     event.returnValue = '';
     //   });
 }
+
+
+
+
+function addAct(parentId = -1){
+    console.log("Adding new element...")
+    let content = ``;
+    content = `
+        <div id="addModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myLargeModalLabel">Add new activity</h5>
+                        <button  type="button" class="btn closeModal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <div class="form-group">
+                            <label for="itemName" class="col-form-label">Activity Name:</label>
+                            <input type="text" class="form-control" id="itemName" placeholder="Activity Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="descText" class="col-form-label">Description:</label>
+                            <textarea class="form-control" id="descText" placeholder="Some kind of description"></textarea>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="closeModal btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="saveModal" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        `    
+    document.getElementById('main').innerHTML += content;
+    $('#addModal').modal('show'); 
+        
+    // MODAL LISTENERS
+    $('#saveModal').click(async function(){
+        let desc = $('#descText').val();
+        let name = $('#itemName').val();
+        let sesId = Cookie.get("sessionToken");
+        let response = await fetch(url + `/activities/${parentId}/test`,
+            {
+                method: 'POST',
+                body: JSON.stringify({"name": name, "desc": desc}),
+                headers: {'Content-Type': 'application/json'}
+            }
+        );
+        let data = await response.json();
+        if (response.status !== 200) {
+            alert(data.error);
+        }       
+    }); 
+
+    $('.closeModal').click(function(){
+        $('#addModal').modal('hide');
+    });
+}
+
 
 
 function delAct(itemId){

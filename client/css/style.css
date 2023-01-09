@@ -83,6 +83,15 @@ nav div.secTitle img{
     grid-row: 3;
     margin: 10px;
 }
+#main #subitemList .sublistHeader{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+#main #subitemList .sublistHeader img{
+    max-height: 50px;
+}
+
 #main #subitemList #sublist{
     display: grid;
     grid-template-columns: auto auto auto;

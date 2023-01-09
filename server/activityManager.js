@@ -35,6 +35,34 @@ function checkSession(sesId){
     });
     return username;
 }
+/**
+ * Function to check if the activity belongs to the user
+ * @param string username 
+ * @param string id 
+ * @returns true if the activity belongs to the user, false otherwise
+ */
+function checkActId(username,id){
+    var filedata = fs.readFileSync("./data/activities.json");
+    var act = JSON.parse(filedata);
+    let correct = false;
+    act.activities.every(element => {
+        console.log(element);
+        console.log(parseInt(id));
+        if (element.id === parseInt(id) && element.username === username) {
+            correct = true;
+            return false;
+        }
+        return true;
+    });
+    
+    return correct;
+}
+
+function getActivityList(){
+    var filedata = fs.readFileSync("./data/activities.json");
+    var act = JSON.parse(filedata);
+    return act.activities;
+}
 
 const getActivities = (req, res) => {
     // console.log(req);
@@ -75,7 +103,7 @@ const putActivity = (req, res) => {
         res.status(400).json({ error: "missing session token" });
         return;
     } else if(!actId){
-        res.status(400).json({ error: "missing session token" });
+        res.status(400).json({ error: "missing activity id" });
         return;
     }
 
@@ -107,6 +135,76 @@ const putActivity = (req, res) => {
     res.status(200).json(activityList);
     return;
 }
+
+
+const addActivity = (req, res) => {
+    // console.log(req);
+    const sesId = req.params.sesId;
+    const parentId = req.params.parentId;
+    console.log("sesId: "+sesId);
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    } else if(!parentId){
+        res.status(400).json({ error: "missing parent activity id" });
+        return;
+    }
+
+    let username = checkSession(sesId);
+    if (username === ""){
+        res.status(400).json({ error: "session not valid, please login again" });
+        return;
+    } else if (username === false){
+        res.status(400).json({ error: "session has expired, please login again" });
+        return;
+    }
+
+    let goodAct = parentId == -1 ? true : checkActId(username,parentId);
+    if(!goodAct){
+        res.status(400).json({ error: "Activity doesn't belong to user" });
+        return;
+    }
+
+    let act = getActivityList();
+    console.log(act[act.length - 1]);
+    let newId = act[act.length - 1].id + 1;
+    let newAct = {
+        username: username,
+        id: newId,
+        mainlevel: parentId == -1,
+        name: req.body.name,
+        desc: req.body.desc,
+        children: []
+
+    }
+    act.push(newAct);
+    if (parseInt(parentId) != -1){
+        act.every(element =>{
+            if (element.id === parseInt(parentId)){
+                element.children.push(newId);
+                return false;
+            }
+            return true;                
+        });
+    }
+    fs.writeFileSync("./data/activities.json", JSON.stringify({"activities":act}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    }); 
+    res.status(200).json(act);
+    return;
+    // act.forEach(element =>{
+
+    // });
+
+
+
+
+}
+
+
 
 const deleteActivity = (req, res) => {
     // console.log(req);
@@ -173,5 +271,6 @@ function getActData(act, actId){
 module.exports = {
     getActivities,
     putActivity,
-    deleteActivity
+    deleteActivity,
+    addActivity
 }
