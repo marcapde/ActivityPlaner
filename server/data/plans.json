@@ -1,0 +1,15 @@
+{
+    "plans":[
+        {
+            "username": "mks",
+            "id": 0,
+            "name": "Just arrieved to Netherlands",
+            "desc" : "Where will I begin from?",
+            "actList": [
+                {"id": 4,"done":false, "comment": "", "time":""}
+            ],
+            "startDate": ""
+
+        }
+    ]
+}

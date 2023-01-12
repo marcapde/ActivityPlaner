@@ -12,22 +12,16 @@ $(document).ready(async function() {
     }else{
         let content = `<ul id="actul">`
         data.forEach(element => {
-            console.log(element);
+            // console.log(element);
             if(element.mainlevel === true) content += `<li id="${element.id}" onclick="openItem(${element.id})"><h6>${element.name}</h6></li>`
             itemList[element.id] = element;
         });
         content += `</ul>`;
         $("#actItems").append(content);
-        if (path.length !=0 ) openItem(path[path.length-1]);
-        console.log("loading " + path[0])
+        if (path!=[]) openItem(path[path.length-1]);
+        // console.log("loading " + path[0])
     }
 });
-
-
-
-function openPlan(planId){
-    
-}
 
 
 
@@ -72,8 +66,8 @@ function openItem(itemId) {
                     </div> 
                     <div id="sublist">`
     itemData.children.forEach(function(childId) {
-        console.log(childId);
-        console.log(itemList)
+        // console.log(childId);
+        // console.log(itemList)
         let data = itemList[childId];
         content += `<div id="${childId}" class="card subitem" onclick="openItem(${childId})" >
                         <div class="card-header subItemHeader">
@@ -85,7 +79,7 @@ function openItem(itemId) {
     });
     content += `</div></div>`;
     document.getElementById('main').innerHTML = content;
-    console.log(itemData.name);
+    // console.log(itemData.name);
 }
 
 

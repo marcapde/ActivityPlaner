@@ -19,7 +19,7 @@ class Session {
     }
 }
 
-function checkSession(sesId){
+function checkSession(sesId, res){
     var filedata = fs.readFileSync("./data/sessions.json");
     var sesions = JSON.parse(filedata);
     let username = "";
@@ -29,10 +29,15 @@ function checkSession(sesId){
             let session = new Session(element.sessionId,username, new Date (element.expiresAt));    
             console.log(session.expiresAt);        
             if (session.isExpired()) {
-                username = false;                
+                res.status(400).json({ error: "session has expired, please login again" });    
+                return false;            
             }
         }
     });
+    if (username == ""){
+        res.status(400).json({ error: "session not valid, please login again" });
+        return;
+    }
     return username;
 }
 /**
@@ -269,6 +274,8 @@ function getActData(act, actId){
 
 }
 module.exports = {
+    Session,
+    checkSession,
     getActivities,
     putActivity,
     deleteActivity,

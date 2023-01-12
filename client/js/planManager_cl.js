@@ -1,32 +1,76 @@
 // TODO cant acces if not logged in
-let url = 'http://127.0.0.1:3003'
-let itemList = [];
+// let url = 'http://127.0.0.1:3003'
+let planList = [];
+let activities = [];
 let planPath = Cookie.get('planPath') ? Cookie.get('planPpath') : [];
 
 $(document).ready(async function() {
+    console.log("loading plans")
     let sesId = Cookie.get("sessionToken");
-    let response = await fetch(url + "/activities/test");
+    let response = await fetch(url + "/plans/test");
     let data = await response.json();
     if (response.status !== 200) {
         alert(data.error);
     }else{
+        // console.log(data)
         let content = `<ul id="actul">`
         data.forEach(element => {
             console.log(element);
-            if(element.mainlevel === true) content += `<li id="${element.id}" onclick="openItem(${element.id})"><h6>${element.name}</h6></li>`
-            itemList[element.id] = element;
+            content += `<li id="${element.id}" onclick="openPlan(${element.id})"><h6>${element.name}</h6></li>`
+            planList[element.id] = element;
         });
         content += `</ul>`;
-        $("#actItems").append(content);
+        $("#planItems").append(content);
         if (path.length !=0 ) openItem(path[path.length-1]);
         console.log("loading " + path[0])
     }
+
+
+
 });
 
 
 
 function openPlan(planId){
-    
+    console.log("opening " + planId);
+    let planData = planList[planId];
+    let content = ``;
+    content += `<div id="itemHeader"> 
+                    <h3>${planData.name}</h3> 
+                    <div class="dropdown">
+                    <button class="btn  dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img  src="./client/src/dots.png">
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                      <li><a class="dropdown-item" id="editAct" onclick="editAct(${planId})">Edit Plan</a></li>
+                      <li><a class="dropdown-item" id="delAct" onclick="delAct(${planId})">Delete Plan</a></li>
+                    </ul>
+                  </div>
+                </div>`;
+    content += `<div id="descCard" class="card">
+                    <div class="card-header"> Description:</div>
+                    <div class="card-body">	${planData.desc}</div>
+                </div>
+                `
+    content += `<div id="subitemList">
+                    <div class="sublistHeader">
+                        <h3>Activities:</h3>
+                        <img onclick="addAct(${planId})" src="./client/src/dark-plus.png">
+                    </div> 
+                    <div id="sublist">`
+    // planData.actList.forEach(act => {
+    //     console.log(act);
+    //     content += `<div id="${act.id}" class="card subitem" onclick="openItem(${act.id})" >
+    //                     <div class="card-header subItemHeader">
+    //                         <div>${act.name}</div>
+    //                         <div><img src="./client/src/delete.png" onclick="delAct(${act.id})"></div>
+    //                     </div>
+    //                     <div class="card-body">	${data.desc}</div>
+    //                 </div>`
+    // });
+    content += `</div></div>`;
+    document.getElementById('main').innerHTML = content;
+    console.log(itemData.name);
 }
 
 

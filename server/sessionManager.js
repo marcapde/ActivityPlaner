@@ -26,7 +26,7 @@ class Session {
 let sessionToken = "";
 
 const signinHandler = (req, res) => {
-    console.log(req)
+    // console.log(req)
     const { uname, password } = req.body;
     console.log(uname, password);
     if (!uname){
@@ -74,6 +74,50 @@ function deleteDuplicates(sessionObject,uname){
         }
     });
 }
+
+const registerUser = (req, res) => {
+    const { uname, password } = req.body;
+    console.log(uname, password);
+    if (!uname){
+        res.status(400).json({ error: "Please enter your username" });
+        return;
+    }
+    var data = fs.readFileSync("./data/users.json");
+    var myObject = JSON.parse(data); 
+    let found = false;
+    myObject.users.every(element => {
+        if (element.username === uname){
+            found = true;
+            return false;
+        }
+        return true;
+    });
+    if (found){
+        res.status(400).json({ error: "Username already in use, please try another one :)" });
+        return;
+    }
+    var filedata = fs.readFileSync("./data/users.json");
+    var users = JSON.parse(filedata);
+    users = users.users;
+    let id = users[users.length - 1].id + 1;
+
+    let user = {
+        id: id,
+        username: uname,
+        password: password
+    }
+    users.push(user);
+
+    fs.writeFileSync("./data/users.json", JSON.stringify({"users":users}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    }); 
+    res.status(200).json(user);
+    return;
+
+}
 // function newSession(newSession){
 //     // DELETE EXPIRED AND DUPLICATES
 //     fs.readFileSync('./data/sessions.json', (err, data) => {
@@ -92,6 +136,7 @@ function deleteDuplicates(sessionObject,uname){
 // }
 module.exports = {
     signinHandler,
+    registerUser,
     Session
 }
 

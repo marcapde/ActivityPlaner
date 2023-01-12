@@ -1,4 +1,4 @@
-$('#submitBtn').click( async function(){
+$('#submitLogin').click( async function(){
     let user = $("[name='uname'")[0].value
     // console.log(user);
     // alert(user[0].value);
@@ -40,6 +40,46 @@ $('#submitBtn').click( async function(){
     // .catch((error) => {alert(error.message);});
 
 });
+
+$('#submitRegister').click( async function(){
+    console.log("register")
+    let user = $("[name='uname'")[0].value
+    // console.log(user);
+    // alert(user[0].value);
+    let password = $("[name='password']")[0].value
+    let password2 = $("[name='password2']")[0].value
+    if (password !== password2){
+        alert("Password are different!");
+        return;
+    }
+    let newUser = {
+        "uname": user,
+        "password": password
+    };
+    console.log(newUser);
+    let response = await fetch("http://127.0.0.1:3003/register", {
+        method: 'POST',
+        body: JSON.stringify(newUser),
+        headers: {'Content-Type': 'application/json'}
+        });
+    let data = await response.json();
+    if (response.status !== 200) {
+        alert(data.error);
+    }else{
+        window.location.href="../login.html";
+    }
+
+    // Cookie.set("sessionToken", JSON.stringify(sesId), 1);
+    // $.ajax("localhost:3003/login",{
+    //     'type': "POST",
+    //     'data': JSON.stringify(newLogin),
+    //     'contentType': 'application/json'
+    // }).then((response) => {Cookie.set("sessionToken", JSON.stringify(response), 1);})
+    // .catch((error) => {alert(error.message);});
+
+});
+
+
 
 // $('#loginForm').submit(function(){
 //     let user = $("[name='uname'")[0].value
