@@ -5,7 +5,7 @@ let path = Cookie.get('path') ? Cookie.get('path') : [];
 
 $(document).ready(async function() {
     let sesId = Cookie.get("sessionToken");
-    let response = await fetch(url + "/activities/test");
+    let response = await fetch(url + `/activities/${sesId}`);
     let data = await response.json();
     if (response.status !== 200) {
         alert(data.error);
@@ -23,7 +23,18 @@ $(document).ready(async function() {
     }
 });
 
-
+async function logout(){
+    let sesId = Cookie.get("sessionToken");
+    let response = await fetch(url + "/logout/" + sesId, {
+        method: "POST"
+    });
+    let data = await response.json();
+    if (response.status !== 200) {
+        alert(data.error);
+    }else{
+        window.location.href="../login.html";
+    }
+}
 
 function openItem(itemId) {
     console.log("opening " + itemId)

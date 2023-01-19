@@ -1,4 +1,6 @@
 const fs = require('fs');
+const uuid = require('uuid');
+
 // import Session from './sessionManager';
 class Session {
     constructor(sessionId, username, expiresAt) {
@@ -23,8 +25,9 @@ function checkSession(sesId, res){
     var filedata = fs.readFileSync("./data/sessions.json");
     var sesions = JSON.parse(filedata);
     let username = "";
-    sesions.sessions.forEach(element => {
-        if (element.sessionId === sesId) {
+    sesions.sessions.forEach(element => {  
+        // console.log(sesId , ' "'+element.sessionId+'" ', sesId == element.sessionId)     
+        if (sesId == '"'+element.sessionId+'"') {
             username = element.username;
             let session = new Session(element.sessionId,username, new Date (element.expiresAt));    
             console.log(session.expiresAt);        
@@ -96,6 +99,40 @@ const getActivities = (req, res) => {
     res.status(200).json(activityList);
     return;
 }
+
+
+const getActivity = (req, res) => {
+    // console.log(req);
+    const sesId = req.params.sesId;
+    const actId = req.params.actId;
+    console.log(sesId);
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    } else if(!actId){
+        res.status(400).json({ error: "missing activity id" });
+        return;
+    }
+
+    let username = checkSession(sesId,res);
+    if (!username) return;
+    var data = fs.readFileSync("./data/activities.json");
+    var activities = JSON.parse(data);
+    let act = undefined;
+    activities.activities.every(element =>{
+        console.log(element.id == actId);
+        if (element.id == actId){
+            act = element;
+            return false;
+        }
+        return true;
+    });
+    res.status(200).json(act);
+    return;
+}
+
+
+
 
 const putActivity = (req, res) => {
     // console.log(req);
@@ -277,6 +314,7 @@ module.exports = {
     Session,
     checkSession,
     getActivities,
+    getActivity,
     putActivity,
     deleteActivity,
     addActivity

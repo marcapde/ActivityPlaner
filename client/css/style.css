@@ -78,17 +78,47 @@ nav div.secTitle img{
     height:fit-content;
     grid-row: 2;
 }
+#main #actCard{
+    grid-column: 1 / 3;
+    margin: 10px; 
+    height:fit-content;
+    grid-row: 3;
+}
+
+
+#actCard .card-body {
+    display: flex;
+    /* align-items: center; */
+    justify-content: space-between;
+}
+#actCard .arrow img{
+    height: 20px;
+}
+
+#actCard .card-body #day-activities{
+    width: 80%;
+    display: grid;
+    row-gap: 10px;
+}
+#actCard .card-body #day-activities .card-header{
+    display:flex;
+    justify-content: space-between;
+}
+
+#actCard .card-body #day-activities .card{
+    grid-column: 1/15;
+}
 #main #subitemList{
     grid-column: 1 / 3;
     grid-row: 3;
     margin: 10px;
 }
-#main #subitemList .sublistHeader{
+#main .sublistHeader{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-#main #subitemList .sublistHeader img{
+#main .sublistHeader img{
     max-height: 50px;
 }
 

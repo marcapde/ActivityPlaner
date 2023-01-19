@@ -11,7 +11,15 @@
 <body>
     <div class="header">
         <img src="client/src/logo-small.png" align="left" alt="logo" id="logo">
-        <img src="client/src/profile-user.png" align="right" alt="profile picture" id="profile" >
+        <div class="dropdown">
+            <button class="btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="client/src/profile-user.png" align="right" alt="profile picture" id="profile" onclick="profileClick()">
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              <li><a class="dropdown-item" id="editAct" onclick="logout()">Log out</a></li>
+              <!-- <li><a class="dropdown-item" id="delAct" onclick="delAct(${itemId})">Delete Activity</a></li> -->
+            </ul>
+          </div>
     </div>
     <nav>
         <div id="list1">
@@ -26,7 +34,7 @@
         <div id="list2">
             <div class="secTitle">
                 <h2 id="planList">Plan List</h2>
-                <img src="./client/src/plus.jpg" alt="add" class="plus" id="addPlan">
+                <img src="./client/src/plus.jpg" alt="add" class="plus" id="addPlan" onclick="addPlan()">
             </div>
             <div id="planItems"></div>
         </div>        

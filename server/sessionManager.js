@@ -1,5 +1,7 @@
 // import users from '../users.json' assert { type: 'json' };
 // const Cookie = require('./cookie')
+const { checkSession } = require('./activityManager.js')
+
 const uuid = require('uuid');
 const fs = require('fs');
 
@@ -23,6 +25,8 @@ class Session {
     }
 }
 
+
+
 let sessionToken = "";
 
 const signinHandler = (req, res) => {
@@ -37,8 +41,10 @@ const signinHandler = (req, res) => {
     var myObject = JSON.parse(data); 
     let found = false;
     myObject.users.every(element => {
-        if (element.uname === uname && element.password === password){
+        console.log(element.username, element.password);
+        if (element.username === uname && element.password === password){
             found = true;
+            console.log("FOUND")
             return false;
         }
         return true;
@@ -74,6 +80,41 @@ function deleteDuplicates(sessionObject,uname){
         }
     });
 }
+
+const logoutHandler = (req, res) => {
+    const sesId = req.params.sesId;
+    console.log("SesId: " + sesId)
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    } 
+    let username = checkSession(sesId,res);
+    if (!username) return;
+    deleteSesion(sesId,res);
+    return;
+}
+
+function deleteSesion(sesId, res) {
+    var filedata = fs.readFileSync("./data/sessions.json");
+    var sessions = JSON.parse(filedata);
+    sessions = sessions.sessions;
+    let newSesions = [];
+    sessions.forEach(element => {
+        console.log(element.sessionId, sesId)
+        console.log(element.sessionId != sesId)
+        if (element.sessionId != sesId) newSesions.push(element);
+    });
+    fs.writeFileSync("./data/sessions.json", JSON.stringify({"sessions":newSesions}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    });
+    res.status(200).json({success : "Log out complete"});
+    return;
+
+}
+
 
 const registerUser = (req, res) => {
     const { uname, password } = req.body;
@@ -136,6 +177,7 @@ const registerUser = (req, res) => {
 // }
 module.exports = {
     signinHandler,
+    logoutHandler,
     registerUser,
     Session
 }
