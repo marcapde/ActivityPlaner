@@ -80,14 +80,8 @@ const getActivities = (req, res) => {
         res.status(400).json({ error: "missing session token" });
         return;
     } 
-    let username = checkSession(sesId);
-    if (username === ""){
-        res.status(400).json({ error: "session not valid, please login again" });
-        return;
-    } else if (username === false){
-        res.status(400).json({ error: "session has expired, please login again" });
-        return;
-    }
+    let username = checkSession(sesId,res);
+    if (!username) return;
     var data = fs.readFileSync("./data/activities.json");
     var activities = JSON.parse(data);
     let activityList = [];
@@ -149,14 +143,8 @@ const putActivity = (req, res) => {
         return;
     }
 
-    let username = checkSession(sesId);
-    if (username === ""){
-        res.status(400).json({ error: "session not valid, please login again" });
-        return;
-    } else if (username === false){
-        res.status(400).json({ error: "session has expired, please login again" });
-        return;
-    }
+    let username = checkSession(sesId,res);
+    if (!username) return;
     var data = fs.readFileSync("./data/activities.json");
     var activities = JSON.parse(data);
     let activityList = [];
@@ -192,14 +180,8 @@ const addActivity = (req, res) => {
         return;
     }
 
-    let username = checkSession(sesId);
-    if (username === ""){
-        res.status(400).json({ error: "session not valid, please login again" });
-        return;
-    } else if (username === false){
-        res.status(400).json({ error: "session has expired, please login again" });
-        return;
-    }
+    let username = checkSession(sesId,res);
+    if (!username) return;
 
     let goodAct = parentId == -1 ? true : checkActId(username,parentId);
     if(!goodAct){
@@ -258,14 +240,8 @@ const deleteActivity = (req, res) => {
         return;
     }
 
-    let username = checkSession(sesId);
-    if (username === ""){
-        res.status(400).json({ error: "session not valid, please login again" });
-        return;
-    } else if (username === false){
-        res.status(400).json({ error: "session has expired, please login again" });
-        return;
-    }
+    let username = checkSession(sesId,res);
+    if (!username) return;
     var data = fs.readFileSync("./data/activities.json");
     var act = JSON.parse(data);
     act.activities.forEach(element => {
@@ -301,9 +277,15 @@ function deleteRecursive(childArr = [], act){
 function getActData(act, actId){
     let index = 0;
     let returnThis = {};
-    act.activities.forEach(element =>{
+    // console.log(act);
+    act.forEach(element =>{
         if (element.id == parseInt(actId)){
-            returnThis =  {index : index, childList : element.children};
+            returnThis =  {
+                index : index, 
+                childList : element.children, 
+                name : element.name, 
+                username : element.username
+            };
         }
         else index ++;
     });
@@ -317,5 +299,7 @@ module.exports = {
     getActivity,
     putActivity,
     deleteActivity,
-    addActivity
+    addActivity,
+    getActData,
+    getActivityList
 }

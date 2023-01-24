@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const { Session, checkSession } = require('./activityManager.js')
+const { Session, checkSession, getActData, getActivityList } = require('./activityManager.js')
 
 function getAllPlans(){
     var filedata = fs.readFileSync("./data/plans.json");
@@ -96,8 +96,83 @@ const deletePlan = (req, res) => {
     return;
 }
 
+const addAct2Plan = (req, res) => {
+    const sesId = req.params.sesId;
+    const actId = req.params.actId;
+    const planId = req.params.planId;  
+
+    const date = req.body.date;
+    const time = req.body.time;
+
+    console.log("sesId: "+sesId);
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    }
+
+    let username = checkSession(sesId,res);
+    if (!username) return;
+    let act = getActData(getActivityList(), actId);
+    if (!act || act.username != username) {
+        res.status(400).json({ error: "activity not valid" });
+        return;
+    }
+    let plans = getAllPlans();
+    let newAct = {
+        id : actId,
+        comment: "",
+        time: time,
+        date: date
+    }
+    plans.every(plan=>{
+        if (plan.id == parseInt(planId)){
+            let newActList = [];
+            if (plan.actList.length > 0){
+                plan.actList.forEach( act => {
+                    if (isGreater(act.time,time)) {
+                        newActList.push(newAct);
+                        if (plan.actList.length == (newActList.length)){
+                            newActList.push(act)
+                        }
+                    }                     
+                    else {
+                        newActList.push(act);
+                        if (plan.actList.length == (newActList.length)){
+                            newActList.push(newAct)
+                        }
+                    }
+                })
+            }else {
+                newActList.push(newAct);
+            }
+            plan.actList = newActList;
+            return false;
+        }
+        return true;
+    });
+    fs.writeFileSync("./data/plans.json", JSON.stringify({"plans":plans}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    }); 
+    res.status(200).json(plans);
+    return;
+
+}
+// RETURN true if h1 is greater than h2
+function isGreater(hour1, hour2) {
+    let h1 = hour1.split(':');
+    let h2 = hour2.split(':');
+    if (h1[0] > h2 [0]) return true;
+    else if (h1[0] == h2[0] && h1[1] > h2[1]) return true;
+    else return false;
+}
+
+
 module.exports = {
     getPlans,
     addPlan,
     deletePlan,
+    addAct2Plan
 }
