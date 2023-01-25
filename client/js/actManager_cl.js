@@ -67,8 +67,8 @@ function openItem(itemId) {
                             <img  src="./client/src/dots.png">
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" id="editAct" onclick="editAct(${itemId})">Edit Activity</a></li>
-                        <li><a class="dropdown-item" id="delAct" onclick="delAct(${itemId})">Delete Activity</a></li>
+                        <li><a class="dropdown-item" id="editAct" onclick="editAct('${itemId}')">Edit Activity</a></li>
+                        <li><a class="dropdown-item" id="delAct" onclick="delAct('${itemId}')">Delete Activity</a></li>
                         </ul>
                   </div>
                 </div>`;
@@ -80,7 +80,7 @@ function openItem(itemId) {
     content += `<div id="subitemList">
                     <div class="sublistHeader">
                         <h3>Children Activities:</h3>
-                        <img onclick="addAct(${itemId})" src="./client/src/dark-plus.png">
+                        <img onclick="addAct('${itemId}')" src="./client/src/dark-plus.png">
                     </div> 
                     <div id="sublist" class="container-fluid">`
     let i = 0;
@@ -103,7 +103,7 @@ function openItem(itemId) {
                                     </ul>
                                 </div>
                             </div>
-                            <div class="card-body" onclick="openItem(${childId})">${data.desc}</div>
+                            <div class="card-body" onclick="openItem('${childId}')">${data.desc}</div>
                         </div>
                     </div>`
          if (i%3 == 2) content += `</div>`

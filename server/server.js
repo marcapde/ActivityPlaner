@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const { signinHandler, registerUser, logoutHandler } = require('./sessionManager.js')
 const { getActivities,getActivity, putActivity, deleteActivity, addActivity } = require('./activityManager.js')
-const { getPlans, addPlan, deletePlan, addAct2Plan } = require('./planManager.js')
+const { getPlans, addPlan, deletePlan, addAct2Plan, editPlan, editActFromPlan, delActFromPlan } = require('./planManager.js')
 
 // import { signinHandler } from 'sessionManajer.js';
 
@@ -25,6 +25,9 @@ app.get('/activity/:actId/:sesId', getActivity);
 app.get('/plans/:sesId', getPlans);
 app.post('/plans/:sesId', addPlan);
 app.put('/plans/addAct/:planId/:actId/:sesId', addAct2Plan);
+app.put('/plans/:planId/:actId/:sesId', editActFromPlan);
+app.put('/plans/:planId/:sesId', editPlan);
+app.delete('/plans/:planId/:actId/:sesId', delActFromPlan);
 app.delete('/plans/:planId/:sesId', deletePlan);
 
 

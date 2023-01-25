@@ -77,13 +77,12 @@ const deletePlan = (req, res) => {
     if (!username) return;
     let plans = getAllPlans();
     
-    plans.forEach(element => {
-        // if (element.children.includes(parseInt(actId))){
-        //     console.log("INCLUDES!")
-        //     element.children.splice(element.children.indexOf(parseInt(actId),1));
-        // }
+    plans.forEach(element => {        
         if (element.id == planId && element.username == username){
             plans.splice(plans.indexOf(element),1);
+        }else if (element.id == planId && element.username != username){
+            res.status(400).json({ error: "Plan does not belong to user"});	
+            return ;
         }
     });
     fs.writeFileSync("./data/plans.json", JSON.stringify({"plans":plans}), (err)=>{
@@ -93,6 +92,45 @@ const deletePlan = (req, res) => {
         } 
     }); 
     res.status(200).json(plans);
+    return;
+}
+
+const editPlan = (req, res) => {
+    const sesId = req.params.sesId;
+    const planId = req.params.planId;
+
+    console.log(sesId);
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    } 
+    let username = checkSession(sesId);
+    if (!username) return;
+    let plans = getAllPlans();
+
+    plans.every(plan=>{        
+        if(plan.id == parseInt(planId)){
+            if (plan.username != username) {
+                res.status(400).json({ error: "Plan does not belong to user"});	
+                username = undefined;
+                return false;
+            }
+            plan.name = req.body.name;
+            plan.desc =  req.body.desc;
+            plan.startDate = req.body.startDate;
+            return false;
+        }else {
+            return true;
+        }
+    });
+    if (username == undefined) return;
+    fs.writeFileSync("./data/plans.json", JSON.stringify({"plans":plans}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    }); 
+    res.status(200).json({success : "Plan edited succesfully"});
     return;
 }
 
@@ -169,10 +207,127 @@ function isGreater(hour1, hour2) {
     else return false;
 }
 
+const editActFromPlan = (req, res) => {
+    const sesId = req.params.sesId;
+    const actId = req.params.actId;
+    const planId = req.params.planId;  
+
+    const date = req.body.date;
+    const time = req.body.time;
+
+    console.log("sesId: "+sesId);
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    }
+
+    let username = checkSession(sesId,res);
+    if (!username) return;
+    let act = getActData(getActivityList(), actId);
+    if (!act || act.username != username) {
+        res.status(400).json({ error: "activity not valid" });
+        return;
+    }
+    let plans = getAllPlans();
+    let newAct = {
+        id : actId,
+        comment: "",
+        time: time,
+        date: date
+    }
+    plans.every(plan=>{
+        if (plan.id == parseInt(planId)){
+            let newActList = [];
+            plan.actList.forEach( act => {
+                if(act.id != actId) {
+                    console.log("diff id ", act.id, " ", actId)
+                    if (isGreater(act.time,time)) {
+                        console.log("is greater")
+                        newActList.push(newAct);
+                        console.log(plan.actList.length, " ", newActList.length -1)
+                        if ((plan.actList.length-1) == (newActList.length )){
+                            console.log("adding second")
+                            newActList.push(act)
+                        }
+                    }                     
+                    else {
+                        console.log("not greater")
+                        newActList.push(act);
+                        if ((plan.actList.length-1) == (newActList.length)){
+                            newActList.push(newAct)
+                        }
+                    }
+                }else if (act.id == actId && (plan.actList.length-1) == (newActList.length )){
+                    console.log("same id ", act.id, " ", actId)
+
+                    newActList.push(newAct);
+                }                  
+            });
+            
+            plan.actList = newActList;
+            return false;
+        }
+        return true;
+    });
+    fs.writeFileSync("./data/plans.json", JSON.stringify({"plans":plans}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    }); 
+    res.status(200).json(plans);
+    return;
+}
+
+const delActFromPlan = (req, res) => {
+    const sesId = req.params.sesId;
+    const actId = req.params.actId;
+    const planId = req.params.planId;  
+
+    console.log("sesId: "+sesId);
+    if (!sesId){
+        res.status(400).json({ error: "missing session token" });
+        return;
+    }
+
+    let username = checkSession(sesId,res);
+    if (!username) return;
+    let act = getActData(getActivityList(), actId);
+    if (!act || act.username != username) {
+        res.status(400).json({ error: "activity not valid" });
+        return;
+    }
+    let plans = getAllPlans();
+    
+    plans.every(plan=>{
+        if (plan.id == parseInt(planId)){
+            let newActList = [];
+            plan.actList.forEach( act => {
+                if(act.id != actId) {
+                    newActList.push(act);
+                }              
+            });            
+            plan.actList = newActList;
+            return false;
+        }
+        return true;
+    });
+    fs.writeFileSync("./data/plans.json", JSON.stringify({"plans":plans}), (err)=>{
+        if (err) {
+            res.status(400).json({ error: err });
+            return;  
+        } 
+    }); 
+    res.status(200).json(plans);
+    return;
+}
 
 module.exports = {
     getPlans,
     addPlan,
     deletePlan,
-    addAct2Plan
+    addAct2Plan,
+    editPlan,
+    editActFromPlan, 
+    delActFromPlan
 }

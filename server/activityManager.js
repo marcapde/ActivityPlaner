@@ -54,8 +54,8 @@ function checkActId(username,id){
     var act = JSON.parse(filedata);
     let correct = false;
     act.activities.every(element => {
-        console.log(element);
-        console.log(parseInt(id));
+        // console.log(element);
+        // console.log(parseInt(id));
         if (element.id === parseInt(id) && element.username === username) {
             correct = true;
             return false;
@@ -114,7 +114,7 @@ const getActivity = (req, res) => {
     var activities = JSON.parse(data);
     let act = undefined;
     activities.activities.every(element =>{
-        console.log(element.id == actId);
+        // console.log(element.id == actId);
         if (element.id == actId){
             act = element;
             return false;
@@ -245,15 +245,23 @@ const deleteActivity = (req, res) => {
     var data = fs.readFileSync("./data/activities.json");
     var act = JSON.parse(data);
     act.activities.forEach(element => {
+        console.log("In :", element.id)
         if (element.children.includes(parseInt(actId))){
-            console.log("INCLUDES!")
-            element.children.splice(element.children.indexOf(parseInt(actId),1));
+            let index = element.children.indexOf(parseInt(actId));
+            console.log("INCLUDES!", index)
+            console.log(element.children)
+            element.children.splice(index,1);
+            console.log(element.children)
         }
+        console.log(element.children)
         if (element.id == actId){
-            if (element.children.length !== 0) deleteRecursive(element.children, act);
+            console.log("Delete this element")
+            if (element.children.length !== 0) deleteRecursive(element.children, act.activities);
             act.activities.splice(act.activities.indexOf(element),1);
         }
+        console.log(element.children)
     });
+    
     fs.writeFileSync("./data/activities.json", JSON.stringify({"activities":act.activities}), (err)=>{
         if (err) {
             res.status(400).json({ error: err });
@@ -270,7 +278,7 @@ function deleteRecursive(childArr = [], act){
         let data = getActData(act,parseInt(element));
         console.log(data);
         deleteRecursive(data.childList, act)
-        act.activities.splice(data.index,1);
+        act.splice(data.index,1);
     });
 }
 

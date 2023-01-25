@@ -44,7 +44,7 @@ function openPlan(planId, startdate = false){
                         <img  src="./client/src/dots.png">
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                      <li><a class="dropdown-item" id="editAct" onclick="editAct(${planId})">Edit Plan</a></li>
+                      <li><a class="dropdown-item" id="editAct" onclick="editPlan(${planId})">Edit Plan</a></li>
                       <li><a class="dropdown-item" id="delAct" onclick="delPlan(${planId})">Delete Plan</a></li>
                     </ul>
                   </div>
@@ -86,7 +86,18 @@ function openPlan(planId, startdate = false){
                 actContent += `<div id="${act.id}" class="card"  >
                                 <div class="card-header">
                                     <div>${data.name}</div>
-                                    <div> ${act.time} </div>
+                                    <div class="d-flex align-items-center "> 
+                                        ${act.time} 
+                                        <div class="dropdown">
+                                            <button class="btn three-dots-btn" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <img  src="./client/src/dots.png">
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                            <li><a class="dropdown-item" id="editActDate" onclick="editActDate('${planId}','${act.id}')">Edit Activity</a></li>
+                                            <li><a class="dropdown-item" id="delActFromPlan" onclick="delActFromPlan('${planId}','${act.id}')">Delete Activity</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body">	${data.desc}</div>
                             </div>`
@@ -117,8 +128,114 @@ function previousDay(planId,planDate,reverse){
     openPlan(planId,'' +  newDate.getFullYear() + '/' + month + '/' + newDate.getDate());
 }
 
+function editActDate(planId, actId){
+    let content = ``;
+    content = `
+        <div id="editAct2plan" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myLargeModalLabel">Edit activity of plan</h5>
+                        <button  type="button" class="btn closeModal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        
+                        <div class="form-group">
+                            <label for="date" class="col-form-label">Date:</label>
+                            <input type="date" class="form-control" id="dateInput">
+                        </div>
+                        <div class="form-group">
+                            <label for="time" class="col-form-label">Time:</label>
+                            <input type="time" class="form-control" id="timeInput">
+                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="closeModal btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="saveEdit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        `    
+    document.getElementById('main').innerHTML += content;
+    $('#editAct2plan').modal('show'); 
+        
+    // MODAL LISTENERS
+    $('#saveEdit').click(async function(){
+        console.log(planList)
+        let date = $('#dateInput').val().replaceAll('-','/');
+        let time = $('#timeInput').val();
+        if (date == "" || time == "" ) {
+            alert("Empty fields")
+            return;
+        }
+        let sesId = Cookie.get("sessionToken");
+        let response = await fetch(url + `/plans/${planId}/${actId}/${sesId}`,
+            {
+                method: 'PUT',
+                body: JSON.stringify({"date": date, "time": time}),
+                headers: {'Content-Type': 'application/json'}
+            }
+        );
+        let data = await response.json();
+        if (response.status !== 200) {
+            alert(data.error);
+        }
+    });
 
+    $('.closeModal').click(function(){
+        $('#editAct2plan').modal('hide');
+    });
+}
 
+function delActFromPlan(planId, actId){
+    let content = ``;
+    content = `
+        <div id="confirmActDelModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myLargeModalLabel">Are you sure?</h5>
+                        <button  type="button" class="btn closeModal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>So you really want to delete this activity?</h6>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="confirmActDel" class="closeModal btn btn-danger" data-dismiss="modal">Delete</button>
+                        <button type="button" class="btn btn-primary closeModal">Keep</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        `    
+    document.getElementById('main').innerHTML += content;
+    $('#confirmActDelModal').modal('show'); 
+        
+    // MODAL LISTENERS
+    $('#confirmActDel').click(async function(){
+        let sesId = Cookie.get("sessionToken");
+        let response = await fetch(url + `/plans/${planId}/${actId}/${sesId}`,
+            {
+                method: 'DELETE',                
+            }
+        );
+        let data = await response.json();
+        if (response.status !== 200) {
+            alert(data.error);
+        }
+    }); 
+
+    $('.closeModal').click(function(){
+        $('#confirmActDelModal').modal('hide');
+    });
+}
 function addPlan(){
     console.log("Adding new Plan...")
     let content = ``;
@@ -127,7 +244,7 @@ function addPlan(){
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="myLargeModalLabel">Add new activity</h5>
+                        <h5 class="modal-title" id="myLargeModalLabel">Add new Plan</h5>
                         <button  type="button" class="btn closeModal" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -184,6 +301,72 @@ function addPlan(){
 }
 
 
+function editPlan(planId){
+    let planData = planList[planId];
+    console.log("Editing Plan...")
+    let content = ``;
+    content = `
+        <div id="editPlanModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myLargeModalLabel">Edit Plan</h5>
+                        <button  type="button" class="btn closeModal" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <div class="form-group">
+                            <label for="itemName" class="col-form-label">Plan Name:</label>
+                            <input type="text" class="form-control" id="itemName" placeholder="${planData.name}">
+                        </div>
+                        <div class="form-group">
+                            <label for="descText" class="col-form-label">Description:</label>
+                            <textarea class="form-control" id="descText" placeholder="${planData.desc}"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="startDate" class="col-form-label">Start Date:</label>
+                            <input type="date" class="form-control" id="startDate" value="${planData.startDate.replaceAll('/','-')}">
+                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="closeModal btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="saveModal" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        `    
+    document.getElementById('main').innerHTML += content;
+    $('#editPlanModal').modal('show'); 
+        
+    // MODAL LISTENERS
+    $('#saveModal').click(async function(){
+        let desc = $('#descText').val();
+        let name = $('#itemName').val();
+        let startDate = $('#startDate').val().replaceAll('-','/');
+        let editedPlan = {"name": name, "desc": desc, "startDate": startDate}
+        console.log("edited: ", editedPlan)
+        let sesId = Cookie.get("sessionToken");
+        let response = await fetch(url + `/plans/${planId}/${sesId}`,
+            {
+                method: 'PUT',
+                body: JSON.stringify(editedPlan),
+                headers: {'Content-Type': 'application/json'}
+            }
+        );
+        let data = await response.json();
+        if (response.status !== 200) {
+            alert(data.error);
+        }       
+    }); 
+
+    $('.closeModal').click(function(){
+        $('#editPlanModal').modal('hide');
+    });
+}
 
 function delPlan(planId){
     let content = ``;
