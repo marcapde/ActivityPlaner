@@ -11,7 +11,6 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cookieParser())
 
-// app.post('/login', window.location.href = '/login.html')
 app.post('/login', signinHandler);
 app.post('/register', registerUser);
 app.post('/logout/:sesId', logoutHandler);

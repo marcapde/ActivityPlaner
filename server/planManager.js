@@ -163,10 +163,15 @@ const addAct2Plan = (req, res) => {
         date: date
     }
     plans.every(plan=>{
-        if (plan.id == parseInt(planId)){
+        if (plan.id == parseInt(planId)){           
             let newActList = [];
             if (plan.actList.length > 0){
                 plan.actList.forEach( act => {
+                    if (act.id == actId){
+                        res.status(400).json({ error: "Activity already in plan" });
+                        username = null;
+                        return false;
+                    }
                     if (isGreater(act.time,time)) {
                         newActList.push(newAct);
                         if (plan.actList.length == (newActList.length)){
@@ -188,6 +193,7 @@ const addAct2Plan = (req, res) => {
         }
         return true;
     });
+    if (username == null) return;
     fs.writeFileSync("./data/plans.json", JSON.stringify({"plans":plans}), (err)=>{
         if (err) {
             res.status(400).json({ error: err });

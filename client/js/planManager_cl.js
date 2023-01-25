@@ -237,6 +237,7 @@ function delActFromPlan(planId, actId){
     });
 }
 function addPlan(){
+    if ($(window).width() <= 600) toggleSidebar('closeMenu');
     console.log("Adding new Plan...")
     let content = ``;
     content = `

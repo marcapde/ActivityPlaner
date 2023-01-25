@@ -272,6 +272,7 @@ function editAct(itemId){
 
 
 function addAct(parentId = -1){
+    if ($(window).width() <= 600) toggleSidebar('closeMenu');
     console.log("Adding new element...")
     let content = ``;
     content = `
