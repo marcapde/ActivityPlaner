@@ -30,7 +30,7 @@ function checkSession(sesId, res){
         if (sesId == '"'+element.sessionId+'"') {
             username = element.username;
             let session = new Session(element.sessionId,username, new Date (element.expiresAt));    
-            console.log(session.expiresAt);        
+            // console.log(session.expiresAt);        
             if (session.isExpired()) {
                 res.status(400).json({ error: "session has expired, please login again" });    
                 return false;            
@@ -75,7 +75,7 @@ function getActivityList(){
 const getActivities = (req, res) => {
     // console.log(req);
     const sesId = req.params.sesId;
-    console.log(sesId);
+    // console.log(sesId);
     if (!sesId){
         res.status(400).json({ error: "missing session token" });
         return;
@@ -99,7 +99,7 @@ const getActivity = (req, res) => {
     // console.log(req);
     const sesId = req.params.sesId;
     const actId = req.params.actId;
-    console.log(sesId);
+    // console.log(sesId);
     if (!sesId){
         res.status(400).json({ error: "missing session token" });
         return;
@@ -133,8 +133,8 @@ const putActivity = (req, res) => {
     const sesId = req.params.sesId;
     const actId = req.params.actId;
     const { name, desc } = req.body;
-    console.log(sesId);
-    console.log(name,desc);
+    // console.log(sesId);
+    // console.log(name,desc);
     if (!sesId){
         res.status(400).json({ error: "missing session token" });
         return;
@@ -149,7 +149,7 @@ const putActivity = (req, res) => {
     var activities = JSON.parse(data);
     let activityList = [];
     activities.activities.forEach(element =>{
-        console.log(element.id == actId);
+        // console.log(element.id == actId);
         if (element.id == actId){
             element.name = name;
             element.desc = desc;
@@ -162,7 +162,7 @@ const putActivity = (req, res) => {
             return;  
         } 
     }); 
-    res.status(200).json(activityList);
+    res.status(200).json({"success":"Updated successfully"});
     return;
 }
 
@@ -171,7 +171,7 @@ const addActivity = (req, res) => {
     // console.log(req);
     const sesId = req.params.sesId;
     const parentId = req.params.parentId;
-    console.log("sesId: "+sesId);
+    // console.log("sesId: "+sesId);
     if (!sesId){
         res.status(400).json({ error: "missing session token" });
         return;
@@ -190,7 +190,7 @@ const addActivity = (req, res) => {
     }
 
     let act = getActivityList();
-    console.log(act[act.length - 1]);
+    // console.log(act[act.length - 1]);
     let newId = act[act.length - 1].id + 1;
     let newAct = {
         username: username,
@@ -234,7 +234,7 @@ const deleteActivity = (req, res) => {
     // console.log(req);
     const sesId = req.params.sesId;
     const actId = req.params.actId;
-    console.log("sesId: "+sesId);
+    // console.log("sesId: "+sesId);
     if (!sesId){
         res.status(400).json({ error: "missing session token" });
         return;
@@ -245,21 +245,15 @@ const deleteActivity = (req, res) => {
     var data = fs.readFileSync("./data/activities.json");
     var act = JSON.parse(data);
     act.activities.forEach(element => {
-        console.log("In :", element.id)
         if (element.children.includes(parseInt(actId))){
             let index = element.children.indexOf(parseInt(actId));
-            console.log("INCLUDES!", index)
-            console.log(element.children)
+            
             element.children.splice(index,1);
-            console.log(element.children)
         }
-        console.log(element.children)
         if (element.id == actId){
-            console.log("Delete this element")
             if (element.children.length !== 0) deleteRecursive(element.children, act.activities);
             act.activities.splice(act.activities.indexOf(element),1);
         }
-        console.log(element.children)
     });
     
     fs.writeFileSync("./data/activities.json", JSON.stringify({"activities":act.activities}), (err)=>{
@@ -268,15 +262,15 @@ const deleteActivity = (req, res) => {
             return;  
         } 
     }); 
-    res.status(200).json(act.activities);
+    res.status(200).json({"success":"Deleted successfully"});
     return;
 }
 
 function deleteRecursive(childArr = [], act){
     childArr.forEach(element => {
-        console.log("Deleting act: "+ element)
+        // console.log("Deleting act: "+ element)
         let data = getActData(act,parseInt(element));
-        console.log(data);
+        // console.log(data);
         deleteRecursive(data.childList, act)
         act.splice(data.index,1);
     });

@@ -155,7 +155,7 @@ const registerUser = (req, res) => {
             return;  
         } 
     }); 
-    res.status(200).json(user);
+    res.status(200);
     return;
 
 }
