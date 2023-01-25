@@ -169,7 +169,6 @@ const addAct2Plan = (req, res) => {
                 let added = false;
                 plan.actList.forEach( act => {
                     if (act.id == actId){
-                        console.log("equalId")
                         res.status(400).json({ error: "Activity already in plan" });
                         username = null;
                         return false;
@@ -177,28 +176,21 @@ const addAct2Plan = (req, res) => {
                     console.log(act.time," ", time, " ",  isGreater(act.time,time))
                     if (!added && isGreater(act.time,time)) {
                         newActList.push(newAct);
-                        console.log("list After push 1 ", newActList)
                         newActList.push(act)
-                        console.log("list After push 2 ", newActList)                        
                         added=true;
                     }                     
                     else {
                         newActList.push(act);
-                        console.log("list After push 3 ", newActList)
 
                         if (!added && plan.actList.length == (newActList.length)){
-                            console.log("list After push 4 ", newActList)
 
                             newActList.push(newAct)
                         }
                     }
                 })
             }else {
-                console.log("list After push 5 ", newActList)
-
                 newActList.push(newAct);
             }
-            console.log("final list ", newActList)
 
             plan.actList = newActList;
             return false;
