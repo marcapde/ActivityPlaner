@@ -166,28 +166,40 @@ const addAct2Plan = (req, res) => {
         if (plan.id == parseInt(planId)){           
             let newActList = [];
             if (plan.actList.length > 0){
+                let added = false;
                 plan.actList.forEach( act => {
                     if (act.id == actId){
+                        console.log("equalId")
                         res.status(400).json({ error: "Activity already in plan" });
                         username = null;
                         return false;
                     }
-                    if (isGreater(act.time,time)) {
+                    console.log(act.time," ", time, " ",  isGreater(act.time,time))
+                    if (!added && isGreater(act.time,time)) {
                         newActList.push(newAct);
-                        if (plan.actList.length == (newActList.length)){
-                            newActList.push(act)
-                        }
+                        console.log("list After push 1 ", newActList)
+                        newActList.push(act)
+                        console.log("list After push 2 ", newActList)                        
+                        added=true;
                     }                     
                     else {
                         newActList.push(act);
-                        if (plan.actList.length == (newActList.length)){
+                        console.log("list After push 3 ", newActList)
+
+                        if (!added && plan.actList.length == (newActList.length)){
+                            console.log("list After push 4 ", newActList)
+
                             newActList.push(newAct)
                         }
                     }
                 })
             }else {
+                console.log("list After push 5 ", newActList)
+
                 newActList.push(newAct);
             }
+            console.log("final list ", newActList)
+
             plan.actList = newActList;
             return false;
         }
@@ -243,27 +255,25 @@ const editActFromPlan = (req, res) => {
     plans.every(plan=>{
         if (plan.id == parseInt(planId)){
             let newActList = [];
+            let added = false;
             plan.actList.forEach( act => {
                 if(act.id != actId) {
-                    // console.log("diff id ", act.id, " ", actId)
-                    if (isGreater(act.time,time)) {
-                        // console.log("is greater")
-                        newActList.push(newAct);
-                        // console.log(plan.actList.length, " ", newActList.length -1)
-                        if ((plan.actList.length-1) == (newActList.length )){
-                            // console.log("adding second")
-                            newActList.push(act)
-                        }
+                    if (!added && isGreater(act.time,time)) {
+                        newActList.push(newAct);                        
+                        newActList.push(act)
+                        added=true;
+                        
                     }                     
                     else {
                         // console.log("not greater")
                         newActList.push(act);
-                        if ((plan.actList.length-1) == (newActList.length)){
+                        if (!added && (plan.actList.length-1) == (newActList.length)){
                             newActList.push(newAct)
+                            added=true;
+
                         }
                     }
                 }else if (act.id == actId && (plan.actList.length-1) == (newActList.length )){
-                    // console.log("same id ", act.id, " ", actId)
 
                     newActList.push(newAct);
                 }                  
