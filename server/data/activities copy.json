@@ -10,14 +10,15 @@
                 1,
                 2,
                 3,
-                4
+                4,
+                16
             ]
         },
         {
             "username": "mks",
             "id": 1,
             "mainlevel": false,
-            "name": "Rotterdam",
+            "name": "RotterdamM",
             "desc": "Visit the city",
             "children": []
         },
@@ -42,16 +43,6 @@
             "id": 4,
             "mainlevel": false,
             "name": "Gouda",
-            "desc": "Visit the city",
-            "children": [
-                5
-            ]
-        },
-        {
-            "username": "mks",
-            "id": 5,
-            "mainlevel": false,
-            "name": "Bruges",
             "desc": "Visit the city",
             "children": []
         },
@@ -142,6 +133,96 @@
             "mainlevel": false,
             "name": "Interactions with navbar",
             "desc": "",
+            "children": []
+        },
+        {
+            "username": "mks",
+            "id": 16,
+            "mainlevel": false,
+            "name": "Camp tulipans",
+            "desc": "bones vistes",
+            "children": []
+        },
+        {
+            "username": "demo0",
+            "id": 17,
+            "mainlevel": true,
+            "name": "DEMO",
+            "desc": "some random activities",
+            "children": [
+                18,
+                19,
+                20
+            ]
+        },
+        {
+            "username": "demo0",
+            "id": 18,
+            "mainlevel": false,
+            "name": "1",
+            "desc": "1",
+            "children": [
+                21
+            ]
+        },
+        {
+            "username": "demo0",
+            "id": 19,
+            "mainlevel": false,
+            "name": "2",
+            "desc": "2",
+            "children": []
+        },
+        {
+            "username": "demo0",
+            "id": 20,
+            "mainlevel": false,
+            "name": "3",
+            "desc": "3",
+            "children": []
+        },
+        {
+            "username": "demo0",
+            "id": 21,
+            "mainlevel": false,
+            "name": "1.1",
+            "desc": "",
+            "children": []
+        },
+        {
+            "username": "demo0",
+            "id": 24,
+            "mainlevel": true,
+            "name": "demo2",
+            "desc": "second demo",
+            "children": [
+                25
+            ]
+        },
+        {
+            "username": "demo0",
+            "id": 26,
+            "mainlevel": false,
+            "name": "5",
+            "desc": "5",
+            "children": []
+        },
+        {
+            "username": "demo0",
+            "id": 27,
+            "mainlevel": true,
+            "name": "TODO",
+            "desc": "",
+            "children": [
+                28
+            ]
+        },
+        {
+            "username": "demo0",
+            "id": 29,
+            "mainlevel": false,
+            "name": "b",
+            "desc": "b",
             "children": []
         }
     ]
